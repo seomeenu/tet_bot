@@ -33,6 +33,6 @@ while True:
 
     dt = clock.tick(120)/(1000/60)
     board.update(dt)
-    bot.update(dt)
+    # bot.update2(dt)
 
     pygame.display.update()

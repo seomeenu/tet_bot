@@ -1,5 +1,4 @@
 import random
-from collections import deque
 from mino import Mino
 
 ROTATIONS = {
@@ -42,13 +41,13 @@ class Bot:
         self.get_moves()
     
     def manual_drop(self):
+        self.get_moves()
         if self.hold:
             self.board.hold()
         self.board.mino.rotate(self.dr, self.board.board)
         for _ in range(abs(self.dx)):
             self.board.mino.move(sign(self.dx), 0, self.board.board)
         self.board.hard_drop(self.board.mino, self.board.board)
-        self.get_moves()
 
     # def update2(self, dt):
     #     self.think_timer += dt
@@ -94,6 +93,19 @@ class Bot:
             h = self.board.next[0]
         self.hold, self.dx, self.dr, _ = self.find_moves(self.board.mino.type, h)
 
+    def evaluate(self, board):
+        lines = self.get_lines(board)*0.4
+        holes = self.get_holes(board)*-1.55
+        change_rate = self.get_change_rate(board)*-0.3
+        avg_height = self.get_avg_height(board)*-0.3
+        score = lines+holes+change_rate+avg_height
+        # print("--------", score)
+        # print(lines, holes, change_rate, avg_height)
+        # for row in board:
+        #     print(*row)
+        # print()
+        return score
+
     def find_moves(self, type, hold_type):
         moves = []
         for i, t in enumerate([type, hold_type]):
@@ -106,22 +118,11 @@ class Bot:
                         temp_mino.move(sign(dx), 0, temp_board)
                     self.drop_place(temp_mino, temp_board)
                     
-                    lines = self.get_lines(temp_board)*3.1
-                    gaps = -self.get_gaps(temp_board, temp_mino)*1.1
-                    change_rate = -self.get_change_rate(temp_board)*1.7
-                    adj = self.get_adj(temp_board, temp_mino)/20
-
-
-                    # print("--------")
-                    # print(lines, gaps, change_rate)
-                    # for row in temp_board:
-                    #     print(*row)
-                        
-                    score = lines+gaps+change_rate+adj
+                    score = self.evaluate(temp_board)
                     moves.append((i, dx, dr, score))
         
-        moves.sort(key=lambda x: x[3])
-        return moves[-1]
+        moves.sort(key=lambda x: x[3], reverse=True)
+        return moves[0]
 
     def drop_place(self, mino, board):
         while not mino.collides(board):
@@ -141,26 +142,37 @@ class Bot:
                 lines += 1
         return lines
 
-    def get_gaps(self, board, mino):
-        gaps = 0
-        for y, row in enumerate(mino.shape):
-            for x, cell in enumerate(row):
-                if cell:
-                    for dy in range(y+mino.y, min(24, y+mino.y+6)):
-                        if board[dy][x+mino.x] == "_":
-                            gaps += 1
-        return gaps
+    def get_holes(self, board):
+        holes = 0
+        for x in range(10):
+            block = False
+            for y in range(24):
+                if board[y][x] != "_":
+                    block = True
+                elif block and board[y][x] == "_":
+                    holes += 1
+        return holes
         
-    def get_adj(self, board, mino):
-        adj = 0
-        for y, row in enumerate(mino.shape):
-            for x, cell in enumerate(row):
-                if cell:
-                    for dy, dx in MOVE:
-                        if 0 <= y+mino.y+dy < 24 and 0 <= x+mino.x+dx < 10:
-                            if board[y+mino.y+dy][x+mino.x+dx] != "_":
-                                adj += 1
-        return adj
+    # def get_above_holes(self, board):
+    #     above_holes = 0
+    #     for x in range(10):
+    #         block = False
+    #         for y in range(24):
+    #             if board[y][x] == "_" and not block:
+    #                 block = True
+    #             elif block and board[y][x] != "_":
+    #                 above_holes += 1
+    #     return above_holes
+            
+    def get_avg_height(self, board):
+        heights = []
+        for x in range(10):
+            for y in range(24):
+                if board[y][x] != "_":
+                    break
+            heights.append((24-y)**1.5)
+        avg_height = sum(heights)/12
+        return avg_height
 
     def get_change_rate(self, board):
         diffs = []

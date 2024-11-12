@@ -221,7 +221,7 @@ class Mino:
 
     def rotate(self, dr, board):
         # 180 spin
-        if dr:
+        if dr != None:
             if dr == 0:
                 self.rotation = (self.rotation+2)%4
                 self.shape = MINO_SHAPES[self.type][str(self.rotation)]
