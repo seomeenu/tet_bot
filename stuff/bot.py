@@ -1,5 +1,5 @@
 import random
-from mino import Mino
+from stuff.mino import Mino
 
 ROTATIONS = {
     "I": [None, 1],
@@ -21,7 +21,7 @@ def sign(x):
 MOVE = ((1, 0), (-1, 0), (0, 1), (0, -1))
 
 class Bot:
-    def __init__(self, board, move_time=3, think_time=3, place_time=3):
+    def __init__(self, board, move_time=4, think_time=7, place_time=6):
         self.board = board
         self.dx = 0
         self.dr = 0
@@ -36,7 +36,7 @@ class Bot:
         self.place_time = place_time
         self.place_timer = 0
         self.rotated = False
-        self.moved = False 
+        self.moved = False
 
         self.get_moves()
     
@@ -48,12 +48,6 @@ class Bot:
         for _ in range(abs(self.dx)):
             self.board.mino.move(sign(self.dx), 0, self.board.board)
         self.board.hard_drop(self.board.mino, self.board.board)
-
-    # def update2(self, dt):
-    #     self.think_timer += dt
-    #     if self.think_timer >= self.think_time:
-    #         self.manual_drop()
-    #         self.think_timer = 0
 
     def update(self, dt):
         self.think_timer += dt*random.randint(5, 10)/10
@@ -94,9 +88,9 @@ class Bot:
         self.hold, self.dx, self.dr, _ = self.find_moves(self.board.mino.type, h)
 
     def evaluate(self, board):
-        lines = self.get_lines(board)*0.4
-        holes = self.get_holes(board)*-1.55
-        change_rate = self.get_change_rate(board)*-0.3
+        lines = self.get_lines(board)*0.5
+        holes = self.get_holes(board)*-1.4
+        change_rate = self.get_change_rate(board)*-0.4
         avg_height = self.get_avg_height(board)*-0.3
         score = lines+holes+change_rate+avg_height
         # print("--------", score)
@@ -122,7 +116,7 @@ class Bot:
                     moves.append((i, dx, dr, score))
         
         moves.sort(key=lambda x: x[3], reverse=True)
-        return moves[0]
+        return moves[random.choice([0, 0, 0, 1])]
 
     def drop_place(self, mino, board):
         while not mino.collides(board):

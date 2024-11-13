@@ -1,8 +1,7 @@
 import pygame
 import sys
-from board import Board
-from bot import Bot
-from settings import TILE_SIZE
+# from scenes.solo import Solo
+from scenes.battle import Battle
 
 pygame.init()
 
@@ -12,8 +11,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 
 clock = pygame.time.Clock()
 
-board = Board()
-bot = Bot(board)
+game = Battle(screen_width, screen_height)
 
 while True:
     screen.fill("#333333")
@@ -22,17 +20,9 @@ while True:
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
-            # pass
-            # board.handle_input(event.key)
-            if event.key == pygame.K_SPACE:
-                bot.manual_drop()
-                
-    screen.blit(board.render_board(), (screen_width//2-5*TILE_SIZE, screen_height//2-13*TILE_SIZE))
-    screen.blit(board.render_next(), (screen_width//2+6*TILE_SIZE, screen_height//2-9*TILE_SIZE))
-    screen.blit(board.render_hold(), (screen_width//2-10*TILE_SIZE, screen_height//2-9*TILE_SIZE))
+            game.event(event)
 
     dt = clock.tick(120)/(1000/60)
-    board.update(dt)
-    # bot.update2(dt)
+    game.update(screen, dt)
 
     pygame.display.update()

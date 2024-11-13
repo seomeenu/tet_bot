@@ -38,6 +38,7 @@ MINO_COLORS = {
     "T": "#B94BC6",
     "Z": "#EB4F65",
     "X": "#555555",
+    "H": "#666666",
 }
 MINO_SHAPES = {
     "I": {
@@ -205,6 +206,7 @@ class Mino:
         self.sy = y
         self.rotation = 0
         self.shape = MINO_SHAPES[type][str(self.rotation)]
+        self.rotated = False
     
     def update(self, dt):
         # self.sx = self.x
@@ -220,8 +222,9 @@ class Mino:
             self.y -= dy
 
     def rotate(self, dr, board):
-        # 180 spin
         if dr != None:
+            # 180 spin
+            self.rotated = True
             if dr == 0:
                 self.rotation = (self.rotation+2)%4
                 self.shape = MINO_SHAPES[self.type][str(self.rotation)]
