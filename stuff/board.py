@@ -151,17 +151,23 @@ class Board:
         self.garbage = 0
 
     def calc_garbage(self, mino, lines):
-        if self.opponent:
-            garbage = 0
-            if mino.type == "T" and mino.rotated:
-                garbage = T_SPIN_GARBAGE[lines]
-            else:
-                garbage = GARBAGE[lines]
-            self.garbage -= garbage
-            if self.garbage < 0:
-                self.sending_garbages.append([30, abs(self.garbage)])
-                # self.opponent.garbage += abs(self.garbage)
-                self.garbage = 0
+        garbage = 0
+        if mino.type == "T" and mino.rotated:
+            garbage = T_SPIN_GARBAGE[lines]
+        else:
+            garbage = GARBAGE[lines]
+        pc = True
+        for y in range(24):
+            for x in range(10):
+                if self.board[y][x] == "_":
+                    pc = False
+                    break
+        if pc:
+            garbage = 10
+        self.garbage -= garbage
+        if self.garbage < 0:
+            self.sending_garbages.append([30, abs(self.garbage)])
+            self.garbage = 0
             
     def clear_lines(self):
         lines = 0
@@ -186,11 +192,12 @@ class Board:
     
     def update(self, dt):
         self.mino.update(dt)
-        for sending_garbage in self.sending_garbages.copy():
-            sending_garbage[0] -= dt
-            if sending_garbage[0] <= 0:
-                self.opponent.garbage += sending_garbage[1]
-                self.sending_garbages.remove(sending_garbage)
+        if self.opponent:
+            for sending_garbage in self.sending_garbages.copy():
+                sending_garbage[0] -= dt
+                if sending_garbage[0] <= 0:
+                    self.opponent.garbage += sending_garbage[1]
+                    self.sending_garbages.remove(sending_garbage)
 
     def render_board(self):
         self.board_surface.fill("#000000")

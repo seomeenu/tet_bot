@@ -36,6 +36,8 @@ class Battle:
 
         self.board_1.update(dt)
         self.bot_1.update(dt)
+        # self.bot_1.manual_drop()
         
         self.board_2.update(dt)
         self.bot_2.update(dt)
+        # self.bot_2.manual_drop()

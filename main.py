@@ -1,7 +1,8 @@
 import pygame
 import sys
 # from scenes.solo import Solo
-from scenes.battle import Battle
+from scenes.bot_solo import BotSolo
+# from scenes.battle import Battle
 
 pygame.init()
 
@@ -11,7 +12,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 
 clock = pygame.time.Clock()
 
-game = Battle(screen_width, screen_height)
+game = BotSolo(screen_width, screen_height)
 
 while True:
     screen.fill("#333333")

@@ -36,7 +36,7 @@ class Bot:
         self.place_time = place_time
         self.place_timer = 0
         self.rotated = False
-        self.moved = False
+        self.moved = False 
 
         self.get_moves()
     
@@ -88,10 +88,10 @@ class Bot:
         self.hold, self.dx, self.dr, _ = self.find_moves(self.board.mino.type, h)
 
     def evaluate(self, board):
-        lines = self.get_lines(board)*0.5
+        lines = self.get_lines(board)*0.55
         holes = self.get_holes(board)*-1.4
         change_rate = self.get_change_rate(board)*-0.4
-        avg_height = self.get_avg_height(board)*-0.3
+        avg_height = self.get_avg_height(board)*-0.35
         score = lines+holes+change_rate+avg_height
         # print("--------", score)
         # print(lines, holes, change_rate, avg_height)
